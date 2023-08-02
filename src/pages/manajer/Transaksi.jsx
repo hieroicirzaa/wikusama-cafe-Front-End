@@ -31,6 +31,7 @@ const StrukPrint = ({ transaksiItem }) => {
 
 // DAFTAR TRANSAKSI
 const TransaksiManajer = () => {
+  let   [search, setSearch] = useState("");
   const [transaksi, setTransaksi] = useState([]);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
@@ -67,6 +68,20 @@ const TransaksiManajer = () => {
     }
   };
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        baseURL + "/transaksi/filterTransaksi",
+        { keyword: search },
+        config
+      );
+      setTransaksi(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handlePrint = (transaksiItem) => {
     setSelectedTransaksi(transaksiItem);
     setShowPrintModal(true);
@@ -82,10 +97,27 @@ const TransaksiManajer = () => {
   });
 
   return (
+    
     <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">
         Daftar Transaksi
       </h1>
+      <div className="flex justify-content-between align-items-center mb-3">
+          {/* search form*/}
+          <form
+            className="w-full flex justify-end text-gray-100"
+            onSubmit={(e) => handleSearch(e)}
+          >
+            <input
+              type="search"
+              name="Search"
+              placeholder="Search..."
+              className="w-56 py-2 pl-4 text-sm outline-none bg-white text-gray-700   rounded-2xl border-2 border-gray-400"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </form>
+        </div>
       <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

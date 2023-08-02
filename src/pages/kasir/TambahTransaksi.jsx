@@ -247,7 +247,7 @@ function TambahTransaksi() {
             <th className="text-center p-3 px-5">Jumlah</th>
             <th className="text-center p-3 px-5">Total</th>
             <th className="text-center p-3 px-5">Aksi</th>
-            <th className="text-center p-3 px-5">Hapus Menu</th>
+            {/* <th className="text-center p-3 px-5">Hapus Menu</th> */}
           </tr>
         </thead>
         <tbody>
@@ -293,7 +293,7 @@ function TambahTransaksi() {
                   Kurang
                 </button>
               </td>
-              <td className="p-3 px-5 text-center" required>
+              {/* <td className="p-3 px-5 text-center" required>
                 <button
                   type="button"
                   onClick={() => handleDelete(menu.id)}
@@ -301,7 +301,7 @@ function TambahTransaksi() {
                 >
                   Hapus
                 </button>
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>

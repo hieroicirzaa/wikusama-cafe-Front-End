@@ -170,13 +170,13 @@ export default function User() {
           </thead>
           <tbody className="border-b border-opacity-20 divide-black divide-y-2 py-4 min-h-[90px] max-h-[100px] border-gray-700 bg-rose-200 text-base text-[Poppins]">
             {users.map((item, index) => (
-              <tr key={item.id} className="hover:bg-rose-100">
+              <tr key={item.id} className="hover:bg-rose-100 text-center">
                 <th className="p-3">{index + 1}</th>
                 <td>{item.nama_user}</td>
                 <td>{item.role}</td>
                 <td>{item.username}</td>
                 <td className=" h-full justify-center">
-                  <div className="flex items-center max-w-[80px] gap-2 ">
+                  <div className="flex max-w-[80px] gap-2   ">
                     {/* button edit */}
                     <button onClick={() => setModalIsOpen(true)}>
                       <a

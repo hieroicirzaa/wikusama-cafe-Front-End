@@ -12,7 +12,7 @@ export default function Meja() {
   let [newMeja, setnewMeja] = useState(
     {
       id: "",
-      nomor_menu: "",
+      nomor_meja: "",
       status: ""
     },
   );
@@ -89,16 +89,15 @@ export default function Meja() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-    data.append("nomor_meja", newMeja.nomor_meja);
-    data.append("status", newMeja.status);
+    const data = {
+      nomor_meja: newMeja.nomor_meja,
+      status: newMeja.status
+    };
 
     if (action === "add") {
       try {
         await axios.post(`${baseURL}/meja/addMeja/`, data, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+          headers: { ...config.headers, "Content-Type": "application/json" }
         });
         setnewMeja({ id: "", nomor_meja: "", status: "" });
         setModalIsOpen(false);
@@ -109,9 +108,7 @@ export default function Meja() {
     } else if (action === "edit") {
       try {
         await axios.put(`${baseURL}/meja/${newMeja.id}`, data, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+          headers: { ...config.headers, "Content-Type": "application/json" }
         });
         setnewMeja({ id: "", nomor_meja: "", status: "" });
         setModalIsOpen(false);
@@ -242,7 +239,7 @@ export default function Meja() {
                   required
                 >
                   <option value="">
-                    {newMeja.status !== "" ? newMeja.status : "~Choose~"}
+                    {newMeja.status !== "" ? newMeja.status : "Choose"}
                   </option>
                   <option value="kosong">Kosong</option>
                   <option value="terisi">Terisi</option>
@@ -262,6 +259,6 @@ export default function Meja() {
         </button> */}
         </div>
       </Modal>
-    </div>
-  );
+    </div>
+  );
 }
