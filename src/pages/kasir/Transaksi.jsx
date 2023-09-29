@@ -2,22 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { baseURL, config } from "../../config";
-import { useReactToPrint } from "react-to-print";
 import Modal from "react-modal";
 import { FaArrowLeft, FaPrint } from "react-icons/fa";
-import PrintButton from "./PrintButton";
-
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // STRUK 
 const StrukPrint = ({ transaksiItem }) => {
   return (
-    <div className="struk-container">
-      {/* <h2 >Struk Transaksi</h2> */}
+    <div className="struk-container mx-20">
+      <br /> <br /> <br />
       {/* Tampilkan informasi transaksi */}
-      <table className="w-full mt-4 border-collapse">
+      <table className="w-full border-collapse ">
         <thead className="bg-[#F4E869] w-full text-lg text-black">
           <tr>
-            <th className="py-3 px-4 " colSpan="2">Struk Transaksi</th>
+            <th className="py-6 px-4 mt-10" colSpan="2">Struk Transaksi</th>
           </tr>
         </thead>
 
@@ -25,9 +24,9 @@ const StrukPrint = ({ transaksiItem }) => {
           <tr>
             <th className="py-3 px-4">Tanggal Transaksi:</th>
             <th className="py-3 px-4">{" "}
-        {new Intl.DateTimeFormat("id-ID").format(
-          new Date(transaksiItem.tgl_transaksi)
-        )}</th>
+              {new Intl.DateTimeFormat("id-ID").format(
+                new Date(transaksiItem.tgl_transaksi)
+              )}</th>
           </tr>
           <tr>
             <th className="py-3 px-4">Nama Pelanggan:</th>
@@ -161,16 +160,30 @@ const Transaksi = () => {
     setShowPrintModal(true);
   };
 
-  const handleAfterPrint = () => {
-    setShowPrintModal(false);
+  // const handleAfterPrint = () => {
+  //   setShowPrintModal(false);
+  // };
+
+  // const handlePrintButtonClick = useReactToPrint({
+  //   content: () => componentRef.current,
+  //   onAfterPrint: handleAfterPrint,
+  // });
+
+  const handlePrintButtonClick = () => {
+    const input = document.getElementById('print-area');
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('wikusama cafe.pdf');
+
+      });
   };
 
-  const handlePrintButtonClick = useReactToPrint({
-    content: () => componentRef.current,
-    onAfterPrint: handleAfterPrint,
-  });
-
- 
 
   return (
     <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
@@ -336,16 +349,21 @@ const Transaksi = () => {
         >
           <FaArrowLeft></FaArrowLeft>
         </button>
-        
-        
-        <div className="mx-auto w-fit bg-white">
+
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-md mb-4 ml-4 mt-4"
+          onClick={handlePrintButtonClick}
+        >
+          <FaPrint></FaPrint>
+        </button>
+        <div >
           {selectedTransaksi && (
-            <div id="print-area" className="max-w-xl">
+            <div id="print-area" >
               <StrukPrint
                 transaksiItem={selectedTransaksi}
                 ref={componentRef}
               />
-              <PrintButton />
+
             </div>
           )}
         </div>
