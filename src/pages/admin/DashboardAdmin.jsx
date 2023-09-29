@@ -9,6 +9,8 @@ function DashboardAdmin() {
   const [menus, setMenus] = useState("");
   const [user, setUser] = useState("");
   let [users, setUsers] = useState([]);
+  
+  
 
   useEffect(() => {
     //sesuai dengan functionnya
@@ -73,7 +75,7 @@ function DashboardAdmin() {
         <div className="container px-6 py-8 mx-auto bg ">          
           
             <h1 className="text-2xl font-semibold text-center  capitalize lg:text-3xl text-[#0B2447]">
-            Saat ini anda login Sebagai Admin
+            Saat ini anda login Sebagai Admin 
           </h1>
           {/* ))} */}
 

@@ -26,11 +26,13 @@ export default function Login() {
         localStorage.setItem("token", response.data.token);
         
         if (response.data.data.role === "admin") {
-          navigate("/admin");
+          navigate("/DashboardAdmin");
         } else if (response.data.data.role === "kasir") {
-          navigate("/kasir");
-        } else {
-          navigate("/manajer");
+          navigate("/DashboardKasir");
+        } else if (response.data.data.role === "manajer") {
+          navigate("/DashboardManajer");
+        }else {
+          alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
         }
       } else {
         console.log("LOGIN GAGAL");

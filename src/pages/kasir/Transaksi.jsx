@@ -4,34 +4,95 @@ import axios from "axios";
 import { baseURL, config } from "../../config";
 import { useReactToPrint } from "react-to-print";
 import Modal from "react-modal";
+import { FaArrowLeft, FaPrint } from "react-icons/fa";
+import PrintButton from "./PrintButton";
+
 
 // STRUK 
 const StrukPrint = ({ transaksiItem }) => {
   return (
     <div className="struk-container">
-      <h2>Struk Transaksi</h2>
+      {/* <h2 >Struk Transaksi</h2> */}
       {/* Tampilkan informasi transaksi */}
-      <p>Tanggal Transaksi: {transaksiItem.tgl_transaksi}</p>
-      <p>Nama Pelanggan: {transaksiItem.nama_pelanggan}</p>
-      <p>No Meja: {transaksiItem.meja.nomor_meja}</p>
-      <p>User: {transaksiItem.user.nama_user}</p>
+      <table className="w-full mt-4 border-collapse">
+        <thead className="bg-[#F4E869] w-full text-lg text-black">
+          <tr>
+            <th className="py-3 px-4 " colSpan="2">Struk Transaksi</th>
+          </tr>
+        </thead>
 
-      <h3>Menu:</h3>
-      <ul>
-        {transaksiItem.detail_transaksi.map((detailItem) => (
-          <li key={detailItem.id}>
-            <ul>
-              {detailItem.menu.nama_menu} ({detailItem.qty})
-            </ul>
-          </li>
-        ))}
-      </ul>
+        <tbody className="bg-[#fffcd8] divide-y divide-gray-700 text-base">
+          <tr>
+            <th className="py-3 px-4">Tanggal Transaksi:</th>
+            <th className="py-3 px-4">{" "}
+        {new Intl.DateTimeFormat("id-ID").format(
+          new Date(transaksiItem.tgl_transaksi)
+        )}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">Nama Pelanggan:</th>
+            <th className="py-3 px-4">{transaksiItem.nama_pelanggan}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">No Meja:</th>
+            <th className="py-3 px-4">{transaksiItem.meja.nomor_meja}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">User:</th>
+            <th className="py-3 px-4">{transaksiItem.user.nama_user}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4" colSpan="2">Menu pemesanan:</th>
+
+          </tr>
+          <tr>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      {detailItem.menu.nama_menu} ({detailItem.qty})
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      Rp{" "}
+                      {new Intl.NumberFormat("id-ID").format(detailItem.harga)}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">Total Harga:</th>
+            <th className="py-3 px-4">
+              Rp{" "}
+              {new Intl.NumberFormat("id-ID").format(
+                transaksiItem.detail_transaksi.reduce(
+                  (total, detailItem) =>
+                    total + detailItem.menu.harga * detailItem.qty,
+                  0
+                )
+              )}
+            </th>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   );
 };
 
 // DAFTAR TRANSAKSI
 const Transaksi = () => {
+  let [search, setSearch] = useState("");
   const [transaksi, setTransaksi] = useState([]);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
@@ -42,7 +103,7 @@ const Transaksi = () => {
   useEffect(() => {
     fetchTransaksi();
   }, []);
-useEffect(() => {
+  useEffect(() => {
     // Cek apakah user sudah login atau belum 
     if (!localStorage.getItem("logged")) {
       navigate("/");
@@ -54,6 +115,7 @@ useEffect(() => {
       setUser(`${id_user}`);
     }
   }, [navigate]);
+
   const fetchTransaksi = async () => {
     try {
       const response = await axios.get(baseURL + "/transaksi/getTransaksi", config);
@@ -80,11 +142,24 @@ useEffect(() => {
       console.error(error);
     }
   };
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        baseURL + "/transaksi/filterTransaksi",
+        { keyword: search },
+        config
+      );
+      setTransaksi(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handlePrint = (transaksiItem) => {
     setSelectedTransaksi(transaksiItem);
     setShowPrintModal(true);
-  };  
+  };
 
   const handleAfterPrint = () => {
     setShowPrintModal(false);
@@ -95,11 +170,29 @@ useEffect(() => {
     onAfterPrint: handleAfterPrint,
   });
 
+ 
+
   return (
     <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">
         Daftar Transaksi
       </h1>
+      <div className="flex justify-content-between align-items-center mb-3">
+        {/* search form*/}
+        <form
+          className="w-full flex justify-end text-gray-100"
+          onSubmit={(e) => handleSearch(e)}
+        >
+          <input
+            type="search"
+            name="Search"
+            placeholder="Search..."
+            className="w-56 py-2 pl-4 text-sm outline-none bg-white text-gray-700   rounded-2xl border-2 border-gray-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </form>
+      </div>
       <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -235,17 +328,27 @@ useEffect(() => {
         className="print-modal"
       >
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md mb-4"
-          onClick={handlePrintButtonClick}
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-md mb-4 ml-4 mt-4"
+          onClick={() => {
+            setShowPrintModal(false);
+            navigate(-1); // Menggunakan navigate(-1) untuk kembali ke halaman sebelumnya
+          }}
         >
-          Print Struk
+          <FaArrowLeft></FaArrowLeft>
         </button>
-        {selectedTransaksi && (
-          <StrukPrint
-            transaksiItem={selectedTransaksi}
-            ref={componentRef}
-          />
-        )}
+        
+        
+        <div className="mx-auto w-fit bg-white">
+          {selectedTransaksi && (
+            <div id="print-area" className="max-w-xl">
+              <StrukPrint
+                transaksiItem={selectedTransaksi}
+                ref={componentRef}
+              />
+              <PrintButton />
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );

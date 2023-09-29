@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { config, baseURL, imageURL } from "../../config";
 // import { AiOutlineSearch } from "react-icons/ai";
@@ -28,9 +29,21 @@ export default function Menu() {
   //   let [modal, setModal] = useState(null); // mannage modal to show
   let [change, setChange] = useState(false); // mannage gambar to show
   let [action, setAction] = useState(""); // mannage action to save
+  const [isAdmin, setIsAdmin] = useState(false); // Tambahkan state untuk menandai apakah pengguna adalah admin
+  const navigate = useNavigate();
+  const userRole = localStorage.getItem("users"); // Ganti ini dengan cara Anda menyimpan peran pengguna saat login
 
   //manages the side-effects in functional component
   useEffect(() => {
+    
+    if (userRole === `"admin"`) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+      // Jika pengguna bukan admin, arahkan mereka ke halaman lain
+      navigate("/"); 
+    }
+  
     fetchMenu();
   }, []);
 
@@ -116,7 +129,9 @@ export default function Menu() {
     data.append("jenis", newMenu.jenis);
     data.append("harga", newMenu.harga);
     data.append("deskripsi", newMenu.deskripsi);
-    data.append("gambar", newMenu.gambar);
+    if (newMenu.gambar !== null) {
+      data.append("gambar", newMenu.gambar);
+    }       
 
     if (action === "add") {
       // save new data to API using AXIOS
@@ -143,10 +158,10 @@ export default function Menu() {
     fetchMenu();
   };
 
-  const handleClose = () => {
-    setChange(false); // clear previous update gambar status
-    // modal.hide(); // close modal
-  };
+  // const handleClose = () => {
+  //   setChange(false); // clear previous update gambar status
+  //   // modal.hide(); // close modal
+  // };
 
   return (
     <div className=" mx-32  sm:p-4 ">

@@ -5,5 +5,5 @@ export const config = {
   };
 export const LOCAL_STORAGE_USER = "wikusamaCafe/user";
 
-export const baseURL = "http://localhost:8000"
+export const baseURL = "http://localhost:4000"
 export const imageURL = baseURL + "/gambar/"
