@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BiHomeHeart } from "react-icons/bi";
 import { IoMenuSharp, IoCardOutline } from "react-icons/io5";
 import { BsClockHistory } from "react-icons/bs";
+import { RxBarChart } from "react-icons/rx";
 
 export default function NavbarAdmin() {
   const navigate = useNavigate();
@@ -80,7 +81,14 @@ export default function NavbarAdmin() {
             Laporan
           </a>
         </li>
-
+        <li className="mx-4 my-6 md:my-0">
+          <a href="Statistik" className="text-xl hover:text-cyan-500 duration-500">
+            <div className="text-xl">
+              <RxBarChart />
+            </div>
+            Statistik
+          </a>
+        </li>
         <button
           className="bg-red-400 text-white font-[Poppins] duration-500 px-6 py-2 mx-4 hover:bg-red-500 rounded"
           onClick={handleLogout}

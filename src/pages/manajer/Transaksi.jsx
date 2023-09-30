@@ -1,45 +1,119 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { baseURL, config } from "../../config";
-import { useReactToPrint } from "react-to-print";
 import Modal from "react-modal";
+import { FaArrowLeft, FaPrint } from "react-icons/fa";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // STRUK 
 const StrukPrint = ({ transaksiItem }) => {
   return (
-    <div className="struk-container">
-      <h2>Struk Transaksi</h2>
+    <div className="struk-container mx-20">
+      <br /> <br /> <br />
       {/* Tampilkan informasi transaksi */}
-      <p>Tanggal Transaksi: {transaksiItem.tgl_transaksi}</p>
-      <p>Nama Pelanggan: {transaksiItem.nama_pelanggan}</p>
-      <p>No Meja: {transaksiItem.meja.nomor_meja}</p>
-      <p>User: {transaksiItem.user.nama_user}</p>
+      <table className="w-full border-collapse ">
+        <thead className="bg-[#F4E869] w-full text-lg text-black">
+          <tr>
+            <th className="py-6 px-4 mt-10" colSpan="2">Struk Transaksi</th>
+          </tr>
+        </thead>
 
-      <h3>Menu:</h3>
-      <ul>
-        {transaksiItem.detail_transaksi.map((detailItem) => (
-          <li key={detailItem.id}>
-            <ul>
-              {detailItem.menu.nama_menu} ({detailItem.qty})
-            </ul>
-          </li>
-        ))}
-      </ul>
+        <tbody className="bg-[#fffcd8] divide-y divide-gray-700 text-base">
+          <tr>
+            <th className="py-3 px-4">Tanggal Transaksi:</th>
+            <th className="py-3 px-4">{" "}
+              {new Intl.DateTimeFormat("id-ID").format(
+                new Date(transaksiItem.tgl_transaksi)
+              )}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">Nama Pelanggan:</th>
+            <th className="py-3 px-4">{transaksiItem.nama_pelanggan}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">No Meja:</th>
+            <th className="py-3 px-4">{transaksiItem.meja.nomor_meja}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">User:</th>
+            <th className="py-3 px-4">{transaksiItem.user.nama_user}</th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4" colSpan="2">Menu pemesanan:</th>
+
+          </tr>
+          <tr>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      {detailItem.menu.nama_menu} ({detailItem.qty})
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      Rp{" "}
+                      {new Intl.NumberFormat("id-ID").format(detailItem.harga)}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+          </tr>
+          <tr>
+            <th className="py-3 px-4">Total Harga:</th>
+            <th className="py-3 px-4">
+              Rp{" "}
+              {new Intl.NumberFormat("id-ID").format(
+                transaksiItem.detail_transaksi.reduce(
+                  (total, detailItem) =>
+                    total + detailItem.menu.harga * detailItem.qty,
+                  0
+                )
+              )}
+            </th>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   );
 };
 
 // DAFTAR TRANSAKSI
-const TransaksiManajer = () => {
-  let   [search, setSearch] = useState("");
+const Transaksi = () => {
+  let [search, setSearch] = useState("");
   const [transaksi, setTransaksi] = useState([]);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
   const componentRef = useRef();
+  const [user, setUser] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTransaksi();
   }, []);
+  useEffect(() => {
+    // Cek apakah user sudah login atau belum 
+    if (!localStorage.getItem("logged")) {
+      navigate("/");
+    } else {
+      // setUser(`Selamat datang sebagai ${localStorage.getItem("user")} ${localStorage.getItem("namauser")}`);
+      // let role = localStorage.getItem("user");
+      // let namauser = localStorage.getItem("namauser");
+      let id_user = localStorage.getItem("id_user");
+      setUser(`${id_user}`);
+    }
+  }, [navigate]);
 
   const fetchTransaksi = async () => {
     try {
@@ -58,7 +132,7 @@ const TransaksiManajer = () => {
 
     try {
       await axios.put(
-        baseURL + "/transaksi/updateStatus/" + transaksiItem.id, //transaksi/updateStatus/
+        baseURL + "/transaksi/updateStatus/" + transaksiItem.id,
         updatedTransaksi,
         config
       );
@@ -67,7 +141,6 @@ const TransaksiManajer = () => {
       console.error(error);
     }
   };
-
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
@@ -85,39 +158,54 @@ const TransaksiManajer = () => {
   const handlePrint = (transaksiItem) => {
     setSelectedTransaksi(transaksiItem);
     setShowPrintModal(true);
-  };  
-
-  const handleAfterPrint = () => {
-    setShowPrintModal(false);
   };
 
-  const handlePrintButtonClick = useReactToPrint({
-    content: () => componentRef.current,
-    onAfterPrint: handleAfterPrint,
-  });
+  // const handleAfterPrint = () => {
+  //   setShowPrintModal(false);
+  // };
+
+  // const handlePrintButtonClick = useReactToPrint({
+  //   content: () => componentRef.current,
+  //   onAfterPrint: handleAfterPrint,
+  // });
+
+  const handlePrintButtonClick = () => {
+    const input = document.getElementById('print-area');
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('wikusama cafe.pdf');
+
+      });
+  };
+
 
   return (
-    
     <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">
         Daftar Transaksi
       </h1>
       <div className="flex justify-content-between align-items-center mb-3">
-          {/* search form*/}
-          <form
-            className="w-full flex justify-end text-gray-100"
-            onSubmit={(e) => handleSearch(e)}
-          >
-            <input
-              type="search"
-              name="Search"
-              placeholder="Search..."
-              className="w-56 py-2 pl-4 text-sm outline-none bg-white text-gray-700   rounded-2xl border-2 border-gray-400"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </form>
-        </div>
+        {/* search form*/}
+        <form
+          className="w-full flex justify-end text-gray-100"
+          onSubmit={(e) => handleSearch(e)}
+        >
+          <input
+            type="search"
+            name="Search"
+            placeholder="Search..."
+            className="w-56 py-2 pl-4 text-sm outline-none bg-white text-gray-700   rounded-2xl border-2 border-gray-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </form>
+      </div>
       <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -253,20 +341,35 @@ const TransaksiManajer = () => {
         className="print-modal"
       >
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md mb-4"
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-md mb-4 ml-4 mt-4"
+          onClick={() => {
+            setShowPrintModal(false);
+            navigate(-1); // Menggunakan navigate(-1) untuk kembali ke halaman sebelumnya
+          }}
+        >
+          <FaArrowLeft></FaArrowLeft>
+        </button>
+
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-md mb-4 ml-4 mt-4"
           onClick={handlePrintButtonClick}
         >
-          Print Struk
+          <FaPrint></FaPrint>
         </button>
-        {selectedTransaksi && (
-          <StrukPrint
-            transaksiItem={selectedTransaksi}
-            ref={componentRef}
-          />
-        )}
+        <div >
+          {selectedTransaksi && (
+            <div id="print-area" >
+              <StrukPrint
+                transaksiItem={selectedTransaksi}
+                ref={componentRef}
+              />
+
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );
 };
 
-export default TransaksiManajer;
+export default Transaksi;

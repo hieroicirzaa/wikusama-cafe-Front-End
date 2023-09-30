@@ -129,8 +129,6 @@ function TambahTransaksi() {
         alert("Transaksi berhasil ditambahkan");
     } finally {
       // Reset form fields and state after successful submission
-
-
       setIdUser("");
       setIdMeja("");
       setNamaPelanggan("");
@@ -140,19 +138,19 @@ function TambahTransaksi() {
     }
   };
 
-  const handleDelete = async (id) => {
-    alert("Are you sure delete this data?");
+  // const handleDelete = async (id) => {
+  //   alert("Are you sure delete this data?");
 
-    // delete data from API using AXIOS
-    try {
-      const response = await axios.delete(baseURL + "/menu/" + id, config);
-      alert(response.data.message);
-    } catch (error) {
-      console.error(error);
-    }
-    // refresh member data
-    fetchMenu();
-  };
+  //   // delete data from API using AXIOS
+  //   try {
+  //     const response = await axios.delete(baseURL + "/menu/" + id, config);
+  //     alert(response.data.message);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   // refresh member data
+  //   fetchMenu();
+  // };
   const calculateTotalHarga = () => {
     let total = 0;
     detailTransaksi.forEach((item) => {
