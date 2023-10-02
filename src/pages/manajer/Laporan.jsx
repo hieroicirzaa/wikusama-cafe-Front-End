@@ -90,7 +90,7 @@ function Laporan() {
   };
 
   return (
-    <div className="flex pr-4  ml-4 mt-4 ">
+    <div className="flex pr-4  ml-6 mt-4 ">
       <div className="w-full h-screen">
         {/* berdasarkan tanggal */}
         <h1 className="text-2xl font-bold mb-4">Tampil Jumlah Pendapatan Berdasarkan Tanggal</h1>
@@ -111,7 +111,7 @@ function Laporan() {
         </form>
 
         {/* berdasarkan bulan dan tahun */}
-        <h1 className="text-2xl font-bold mb-4">Tampil Jumlah Pendapatan Berdasarkan Bulan</h1>
+        <h1 className="text-2xl font-bold mb-4">Tampil Jumlah Pendapatan Berdasarkan Bulan Tertentu & Pada Tahun Tertentu</h1>
         <form onSubmit={handleFormSubmitBulan} className="mb-4">
           <div className="flex mb-2">
             <label className="mr-2">Bulan:</label>

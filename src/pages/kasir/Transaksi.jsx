@@ -9,14 +9,15 @@ import jsPDF from 'jspdf';
 
 // STRUK 
 const StrukPrint = ({ transaksiItem }) => {
+  //pt-10 pb-20  w-80 mx-auto rounded-lg px-5 text-sm
   return (
-    <div className="struk-container mx-20">
-      <br /> <br /> <br />
+    <div className="struk-container flex justify-center items-center h-screen"> 
+      
       {/* Tampilkan informasi transaksi */}
-      <table className="w-full border-collapse ">
+       <table className="border-collapse "> {/* w-full jika ingin tampilan full */}
         <thead className="bg-[#F4E869] w-full text-lg text-black">
           <tr>
-            <th className="py-6 px-4 mt-10" colSpan="2">Struk Transaksi</th>
+            <th className="py-6 px-4" colSpan="2">Struk Transaksi</th>
           </tr>
         </thead>
 
@@ -344,7 +345,7 @@ const Transaksi = () => {
           className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-md mb-4 ml-4 mt-4"
           onClick={() => {
             setShowPrintModal(false);
-            navigate(-1); // Menggunakan navigate(-1) untuk kembali ke halaman sebelumnya
+            navigate(0); // Menggunakan navigate(-1) untuk kembali ke halaman sebelumnya
           }}
         >
           <FaArrowLeft></FaArrowLeft>
@@ -358,7 +359,7 @@ const Transaksi = () => {
         </button>
         <div >
           {selectedTransaksi && (
-            <div id="print-area" >
+            <div id="print-area" className="" >
               <StrukPrint
                 transaksiItem={selectedTransaksi}
                 ref={componentRef}

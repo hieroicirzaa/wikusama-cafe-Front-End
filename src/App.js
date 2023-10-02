@@ -10,8 +10,9 @@ import DashboardKasir from "./pages/kasir/DashboardKasir";
 import Transaksi from "./pages/kasir/Transaksi";
 import TambahTransaksi from "./pages/kasir/TambahTransaksi";
 import DashboardManajer from "./pages/manajer/DashboardManajer";
-import TransaksiManajer from "./pages/manajer/Transaksi";
+import TransaksiManajer from "./pages/manajer/TransaksiManajer";
 import Laporan from "./pages/manajer/Laporan";
+import Statistik from "./pages/manajer/Statistik";
 
 import "./App.css";
 import TataLetak from "./components/tataLetak";
@@ -46,6 +47,7 @@ export default function App() {
       <Route path="DashboardManajer" element={<DashboardManajer/>}/>
       <Route path="TransaksiManajer" element={<TransaksiManajer/>}/>
       <Route path="Laporan" element={<Laporan/>}/>
+      <Route path="Statistik" element={<Statistik/>}/>
       </Routes>
     </div>
   );
