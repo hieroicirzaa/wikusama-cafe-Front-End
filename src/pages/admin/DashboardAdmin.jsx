@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"; // usestate untuk menyimpan nilai, useeffect: menjelaskan function sebelum render/return
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // import TataLetak from "../../components/TataLetak"
 import { baseURL, config } from "../../config";
@@ -9,11 +10,12 @@ function DashboardAdmin() {
   const [menus, setMenus] = useState("");
   const [user, setUser] = useState("");
   let [users, setUsers] = useState([]);
-  
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
-    //sesuai dengan functionnya
+    if (localStorage.getItem("users") !== `"admin"`) {
+      navigate("/"); 
+    } 
     getMejas();
     getMenus();
     getUsers();

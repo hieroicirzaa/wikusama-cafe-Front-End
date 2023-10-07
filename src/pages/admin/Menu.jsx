@@ -29,21 +29,15 @@ export default function Menu() {
   //   let [modal, setModal] = useState(null); // mannage modal to show
   let [change, setChange] = useState(false); // mannage gambar to show
   let [action, setAction] = useState(""); // mannage action to save
-  const [isAdmin, setIsAdmin] = useState(false); // Tambahkan state untuk menandai apakah pengguna adalah admin
+  
   const navigate = useNavigate();
-  const userRole = localStorage.getItem("users"); // Ganti ini dengan cara Anda menyimpan peran pengguna saat login
 
   //manages the side-effects in functional component
-  useEffect(() => {
-    
-    if (userRole === `"admin"`) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-      // Jika pengguna bukan admin, arahkan mereka ke halaman lain
+  useEffect(() => { 
+    if (localStorage.getItem("users") !== `"admin"`) {
       navigate("/"); 
-    }
-  
+    } 
+
     fetchMenu();
   }, []);
 

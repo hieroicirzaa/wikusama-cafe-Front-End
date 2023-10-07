@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+import { useNavigate } from "react-router-dom";
 import { baseURL, config } from '../../config';
 
 function Laporan() {
@@ -10,6 +12,12 @@ function Laporan() {
   const [noTransaksi, setNoTransaksi] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("users") !== `"manajer"`) {
+      navigate("/");
+    }
+  }, []);
 
   const handleFormSubmitTanggal = async (event) => {
     event.preventDefault();

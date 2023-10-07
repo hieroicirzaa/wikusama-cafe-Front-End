@@ -2,6 +2,7 @@ import Modal from "react-modal";
 import axios from "axios"; //to mannage API
 import { useState, useEffect } from "react";
 import { config, baseURL} from "../../config";
+import { useNavigate } from "react-router-dom";
 
 //functional component (Hooks)
 export default function User() {
@@ -24,9 +25,13 @@ export default function User() {
   let [search, setSearch] = useState(""); // collect search data
   let [change, setChange] = useState(false); // mannage gambar to show
   let [action, setAction] = useState(""); // mannage action to save
+  const navigate = useNavigate();
 
   //manages the side-effects in functional component
   useEffect(() => {
+    if (localStorage.getItem("users") !== `"admin"`) {
+      navigate("/"); 
+    } 
     fetchUser();
   }, []);
 

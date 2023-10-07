@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { baseURL, config } from '../../config';
+import { useNavigate } from "react-router-dom";
 import BarChart from "../../components/chartJS/BarChart";
 import LineChart from "../../components/chartJS/LineChart";
 import PieChart from "../../components/chartJS/PieChart";
@@ -52,8 +53,11 @@ function Statistik() {
       console.error(error);
     }
   };
-
+  const navigate = useNavigate();
   useEffect(() => {
+    if (localStorage.getItem("users") !== `"manajer"`) {
+      navigate("/");
+    }
     fetchData();
   }, [isTerlaris]);
 

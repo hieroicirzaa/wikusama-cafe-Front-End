@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseURL } from "../config";
-import loginImg from '../assets/login.jpeg';
+import loginImg from '../assets/bgCafe.jpg';
 
 export default function Login() {
   const [username, setUsername] = useState("");

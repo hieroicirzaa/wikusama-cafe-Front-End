@@ -11,39 +11,44 @@ import jsPDF from 'jspdf';
 const StrukPrint = ({ transaksiItem }) => {
   //pt-10 pb-20  w-80 mx-auto rounded-lg px-5 text-sm
   return (
-    <div className="struk-container flex justify-center items-center h-screen"> 
-      
+    <div className="struk-container flex justify-center items-center h-screen">
+
       {/* Tampilkan informasi transaksi */}
-       <table className="border-collapse "> {/* w-full jika ingin tampilan full */}
+      <table className="border-collapse "> {/* w-full jika ingin tampilan full */}
         <thead className="bg-[#F4E869] w-full text-lg text-black">
           <tr>
-            <th className="py-6 px-4" colSpan="2">Struk Transaksi</th>
+            <th className="py-6 px-4" colSpan="4">Struk Transaksi</th>
           </tr>
         </thead>
 
         <tbody className="bg-[#fffcd8] divide-y divide-gray-700 text-base">
           <tr>
-            <th className="py-3 px-4">Tanggal Transaksi:</th>
-            <th className="py-3 px-4">{" "}
+            <th className="py-3 px-4" colSpan="2">Tanggal Transaksi:</th>
+            <th className="py-3 px-4" colSpan="2">{" "}
               {new Intl.DateTimeFormat("id-ID").format(
                 new Date(transaksiItem.tgl_transaksi)
               )}</th>
           </tr>
           <tr>
-            <th className="py-3 px-4">Nama Pelanggan:</th>
-            <th className="py-3 px-4">{transaksiItem.nama_pelanggan}</th>
+            <th className="py-3 px-4" colSpan="2">Nama Pelanggan:</th>
+            <th className="py-3 px-4" colSpan="2">{transaksiItem.nama_pelanggan}</th>
           </tr>
           <tr>
-            <th className="py-3 px-4">No Meja:</th>
-            <th className="py-3 px-4">{transaksiItem.meja.nomor_meja}</th>
+            <th className="py-3 px-4" colSpan="2">No Meja:</th>
+            <th className="py-3 px-4" colSpan="2">{transaksiItem.meja.nomor_meja}</th>
           </tr>
           <tr>
-            <th className="py-3 px-4">User:</th>
-            <th className="py-3 px-4">{transaksiItem.user.nama_user}</th>
+            <th className="py-3 px-4" colSpan="2">Karyawan:</th>
+            <th className="py-3 px-4" colSpan="2">{transaksiItem.user.nama_user}</th>
           </tr>
           <tr>
-            <th className="py-3 px-4" colSpan="2">Menu pemesanan:</th>
-
+            <th className="py-3 px-4" colSpan="4">Pemesanan</th>
+          </tr>
+          <tr>
+          <th className="py-3 px-4" >Menu</th>
+          <th className="py-3 px-4" >Jumlah</th>
+          <th className="py-3 px-4" >Harga Satuan</th>
+          <th className="py-3 px-4" >Total Harga</th>
           </tr>
           <tr>
             <th className="py-3 px-4">
@@ -51,7 +56,30 @@ const StrukPrint = ({ transaksiItem }) => {
                 {transaksiItem.detail_transaksi.map((detailItem) => (
                   <li key={detailItem.id}>
                     <ul>
-                      {detailItem.menu.nama_menu} ({detailItem.qty})
+                      {detailItem.menu.nama_menu} 
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      {detailItem.qty}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </th>
+            <th className="py-3 px-4">
+              <ul>
+                {transaksiItem.detail_transaksi.map((detailItem) => (
+                  <li key={detailItem.id}>
+                    <ul>
+                      Rp{" "}
+                      {new Intl.NumberFormat("id-ID").format(detailItem.menu.harga)}
                     </ul>
                   </li>
                 ))}
@@ -71,7 +99,8 @@ const StrukPrint = ({ transaksiItem }) => {
             </th>
           </tr>
           <tr>
-            <th className="py-3 px-4">Total Harga:</th>
+          <th className="py-3 px-4" colSpan="3">Total Harga Keseluruhan:</th>
+            
             <th className="py-3 px-4">
               Rp{" "}
               {new Intl.NumberFormat("id-ID").format(
@@ -98,12 +127,15 @@ const TransaksiManajer = () => {
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
   const componentRef = useRef();
   const [user, setUser] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate(0);
 
   useEffect(() => {
     fetchTransaksi();
   }, []);
   useEffect(() => {
+    if (localStorage.getItem("users") !== `"manajer"`) {
+      navigate("/"); 
+    } 
     // Cek apakah user sudah login atau belum 
     if (!localStorage.getItem("logged")) {
       navigate("/");
@@ -158,7 +190,12 @@ const TransaksiManajer = () => {
 
   const handlePrint = (transaksiItem) => {
     setSelectedTransaksi(transaksiItem);
-    setShowPrintModal(true);
+    if(transaksiItem.status === "lunas"){
+      setShowPrintModal(true);
+    }else {
+      alert("maaf hanya bisa cetak struk apabila pembayaran sudah lunas");
+    }
+    
   };
 
   // const handleAfterPrint = () => {
@@ -181,10 +218,8 @@ const TransaksiManajer = () => {
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save('wikusama cafe.pdf');
-
       });
   };
-
 
   return (
     <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
@@ -239,7 +274,7 @@ const TransaksiManajer = () => {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                User
+                Karyawan
               </th>
               <th
                 scope="col"
@@ -321,14 +356,18 @@ const TransaksiManajer = () => {
                     </button>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md"
-                    onClick={() => handlePrint(transaksiItem)}
-                  >
-                    Print
-                  </button>
-                </td>
+                
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md"
+                      onClick={() => handlePrint(transaksiItem)}
+                    >
+                      Print
+                    </button>
+                  </td>
+                
+                
+
               </tr>
             ))}
           </tbody>

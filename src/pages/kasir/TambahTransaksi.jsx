@@ -3,6 +3,7 @@ import {  useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { baseURL, config } from "../../config";
 
+
 function TambahTransaksi() {
   const [menu, setMenu] = useState([]);
   const [meja, setMeja] = useState([]);
@@ -16,6 +17,9 @@ function TambahTransaksi() {
   const [totalHarga, setTotalHarga] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
+    if (localStorage.getItem("users") !== `"kasir"`) {
+      navigate("/"); 
+    } 
     fetchMenu();
     fetchMeja();
     fetchUser();
@@ -175,22 +179,7 @@ function TambahTransaksi() {
   <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mx-14 sm:p-5">
     
 
-    {/* User */}
-    <div>
-      <label className="block mb-2 font-bold text-gray-900">User:</label>
-      <select
-        value={idUser}
-        onChange={(event) => setIdUser(event.target.value)}
-        className="px-4 py-2 w-full border rounded-lg text-gray-900" required
-      >
-        <option value="">Pilih User</option>
-        
-          <option key={user.id_user} value={user.id_user}>
-            {user.nama_user}
-          </option>
-      
-      </select>
-    </div>
+    
 
     {/* Nomor Meja */}
     <div>

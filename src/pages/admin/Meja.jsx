@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { config, baseURL } from "../../config";
 
@@ -20,9 +21,14 @@ export default function Meja() {
   let [search, setSearch] = useState(""); // collect search data
 
   let [action, setAction] = useState(""); // mannage action to save
+  
+  const navigate = useNavigate();
 
   //manages the side-effects in functional component
   useEffect(() => {
+    if (localStorage.getItem("users") !== `"admin"`) {
+      navigate("/"); 
+    } 
     fetchMeja();
   }, []);
 
