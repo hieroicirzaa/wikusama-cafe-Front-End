@@ -10,6 +10,8 @@ function DashboardManajer() {
   const [user, setUser] = useState("");
   let [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  
+  const namauser = JSON.parse(localStorage.getItem("namauser"))
 
   useEffect(() => {
     if (localStorage.getItem("users") !== `"manajer"`) {
@@ -81,7 +83,7 @@ function DashboardManajer() {
           {/* ))} */}
 
           <p className="max-w-2xl mx-auto mt-4 text-center  xl:mt-6 text-[#0B2447]">
-            Hai Manajer aku tau kamu cuma liat-liat penghasilan perbulan dan perhari 
+            Hai  {namauser} aku tau kamu cuma liat-liat penghasilan perbulan dan perhari 
             Tetap Semangat yaaaaa!!!! love Manajer
           </p>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { baseURL, config } from "../../config";
 
@@ -18,8 +18,8 @@ function TambahTransaksi() {
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("users") !== `"kasir"`) {
-      navigate("/"); 
-    } 
+      navigate("/");
+    }
     fetchMenu();
     fetchMeja();
     fetchUser();
@@ -43,7 +43,7 @@ function TambahTransaksi() {
       // });
 
       // setMeja(options);
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -53,8 +53,8 @@ function TambahTransaksi() {
     try {
       const response = await axios.get(baseURL + "/user/user/kasir", config);
       let options = {
-        id_user : localStorage.getItem('id_user'),
-        nama_user : localStorage.getItem('namauser')
+        id_user: localStorage.getItem('id_user'),
+        nama_user: localStorage.getItem('namauser')
       }
 
       setUser(JSON.parse(JSON.stringify(options)));
@@ -72,11 +72,14 @@ function TambahTransaksi() {
       (item) => item.id_menu === id_menu
     );
 
+    if (qty === -1 && (!existingItem || existingItem.qty === 0)) {
+      return; // Hindari pengurangan jika qty adalah -1 dan item tidak ada atau jumlahnya sudah 0.
+    }
+
     if (existingItem) {
       const updatedItem = {
         ...existingItem,
         qty: existingItem.qty + qty,
-        harga: existingItem
       };
       const updatedTransaksi = detailTransaksi.map((item) =>
         item.id_menu === id_menu ? updatedItem : item
@@ -90,9 +93,13 @@ function TambahTransaksi() {
   };
 
   const handleQtyChange = (id_menu, qty) => {
+    if (qty < 0) {
+      return; // Hindari nilai negatif.
+    }
+
     const updatedItem = {
       ...detailTransaksi.find((item) => item.id_menu === id_menu),
-      harga: parseInt(harga),
+      qty: parseInt(qty),
     };
     const updatedTransaksi = detailTransaksi.map((item) =>
       item.id_menu === id_menu ? updatedItem : item
@@ -105,7 +112,7 @@ function TambahTransaksi() {
 
 
     try {
-      const transaksiData = {   
+      const transaksiData = {
         id_user: localStorage.getItem('id_user'),
         id_meja: idMeja,
         nama_pelanggan: namaPelanggan,
@@ -129,8 +136,8 @@ function TambahTransaksi() {
 
     } catch (error) {
       console.error(error);
-        navigate('/Transaksi', { replace: true });
-        alert("Transaksi berhasil ditambahkan");
+      navigate('/Transaksi', { replace: true });
+      alert("Transaksi berhasil ditambahkan");
     } finally {
       // Reset form fields and state after successful submission
       setIdUser("");
@@ -174,113 +181,114 @@ function TambahTransaksi() {
 
   return (
     <div className="py-6 overflow-auto">
-  <h1 className="flex justify-center font-semibold text-4xl">Tambah Transaksi</h1>
+      <h1 className="flex justify-center font-semibold text-4xl">Tambah Transaksi</h1>
 
-  <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mx-14 sm:p-5">
-    
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mx-14 sm:p-5">
 
-    
 
-    {/* Nomor Meja */}
-    <div>
-      <label className="block mb-2 font-bold text-gray-900">Nomor Meja:</label>
-      <select
-        value={idMeja}
-        onChange={(event) => setIdMeja(event.target.value)}
-        className="px-4 py-2 w-full border rounded-lg text-gray-900" required
-      >
-        <option value="">Pilih Meja</option>
-        {meja.map((meja) => (
-          <option key={meja.id_meja} value={meja.id_meja}>
-            {meja.nomor_meja}
-          </option>
-        ))}
-      </select>
-    </div>
 
-    {/* Nama Pelanggan */}
-    <div>
-      <label className="block mb-2 font-bold text-gray-900">Nama Pelanggan:</label>
-      <input
-        type="text"
-        value={namaPelanggan}
-        onChange={(event) => setNamaPelanggan(event.target.value)}
-        className="px-4 py-2 w-full border rounded-lg text-gray-900" required
-      />
-    </div>
 
-    {/* Status Pembayaran */}
-    <div>
-      <label className="block mb-2 font-bold text-gray-900">Status Pembayaran:</label>
-      <select
-        value={status}
-        onChange={(event) => setStatus(event.target.value)}
-        name="status"
-        className="px-4 py-2 w-full border rounded-lg text-gray-900" required
-      >
-        <option value="">Pilih Status</option>
-        <option value="belum_bayar">Belum Bayar</option>
-        <option value="lunas">Lunas</option>
-      </select>
-    </div>
+        {/* Nomor Meja */}
+        <div>
+          <label className="block mb-2 font-bold text-gray-900">Nomor Meja:</label>
+          <select
+            value={idMeja}
+            onChange={(event) => setIdMeja(event.target.value)}
+            className="px-4 py-2 w-full border rounded-lg text-gray-900" required
+          >
+            <option value="">Pilih Meja</option>
+            {meja.map((meja) => (
+              <option key={meja.id_meja} value={meja.id_meja}>
+                {meja.nomor_meja}
+              </option>
+            ))}
+          </select>
+        </div>
 
-    {/* Daftar Menu */}
-    <div className="col-span-2 mt-10">
-      <table className="w-full text-md bg-slate-200 shadow-md rounded mb-4">
-        <thead>
-          <tr className="bg-white">
-            <th className="text-center p-3 px-5">Menu</th>
-            <th className="text-center p-3 px-5">Harga</th>
-            <th className="text-center p-3 px-5">Jumlah</th>
-            <th className="text-center p-3 px-5">Total</th>
-            <th className="text-center p-3 px-5">Aksi</th>
-            {/* <th className="text-center p-3 px-5">Hapus Menu</th> */}
-          </tr>
-        </thead>
-        <tbody>
-          {menu.map((menu) => (
-            <tr key={menu.id} className="hover:bg-gray-300">
-              <td className="text-center p-3 px-5">{menu.nama_menu}</td>
-              <td className="text-center p-3 px-5">{menu.harga}</td>
-              <td className="text-center p-3 px-5">
-                <input
-                  type="number"
-                  value={
-                    detailTransaksi.find(
-                      (item) => item.id_menu === menu.id
-                    )?.qty || 0
-                  }
-                  min="0"
-                  max="99"
-                  onChange={(event) =>
-                    handleQtyChange(menu.id, event.target.value)
-                  }
-                  className="w-24 text-center border rounded-md py-2 px-2"
-                />
-              </td>
-              <td className="p-3 px-2 text-center">
-                {menu.harga *
-                  (detailTransaksi.find(
-                    (item) => item.id_menu === menu.id
-                  )?.qty || 0)}
-              </td>
-              <td className="p-3 px-5 text-center" required>
-                <button
-                  type="button"
-                  onClick={() => handleAddToCart(menu.id, 1)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2" required
-                >
-                  Tambah
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAddToCart(menu.id, -1)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" required
-                >
-                  Kurang
-                </button>
-              </td>
-              {/* <td className="p-3 px-5 text-center" required>
+        {/* Nama Pelanggan */}
+        <div>
+          <label className="block mb-2 font-bold text-gray-900">Nama Pelanggan:</label>
+          <input
+            type="text"
+            value={namaPelanggan}
+            onChange={(event) => setNamaPelanggan(event.target.value)}
+            className="px-4 py-2 w-full border rounded-lg text-gray-900" required
+          />
+        </div>
+
+        {/* Status Pembayaran */}
+        <div>
+          <label className="block mb-2 font-bold text-gray-900">Status Pembayaran:</label>
+          <select
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            name="status"
+            className="px-4 py-2 w-full border rounded-lg text-gray-900" required
+          >
+            <option value="">Pilih Status</option>
+            <option value="belum_bayar">Belum Bayar</option>
+            <option value="lunas">Lunas</option>
+          </select>
+        </div>
+
+        {/* Daftar Menu */}
+        <div className="col-span-2 mt-10">
+          <table className="w-full text-md bg-slate-200 shadow-md rounded mb-4">
+            <thead>
+              <tr className="bg-white">
+                <th className="text-center p-3 px-5">Menu</th>
+                <th className="text-center p-3 px-5">Harga</th>
+                <th className="text-center p-3 px-5">Jumlah</th>
+                <th className="text-center p-3 px-5">Total</th>
+                <th className="text-center p-3 px-5">Aksi</th>
+                {/* <th className="text-center p-3 px-5">Hapus Menu</th> */}
+              </tr>
+            </thead>
+            <tbody>
+              {menu.map((menu) => (
+                <tr key={menu.id} className="hover:bg-gray-300">
+                  <td className="text-center p-3 px-5">{menu.nama_menu}</td>
+                  <td className="text-center p-3 px-5">{menu.harga}</td>
+                  <td className="text-center p-3 px-5">
+                    <input
+                      type="number"
+                      value={
+                        detailTransaksi.find(
+                          (item) => item.id_menu === menu.id
+                        )?.qty || 0
+                      }
+                      min="0"
+                      max="99"
+                      onChange={(event) =>
+                        handleQtyChange(menu.id, event.target.value)
+                      }
+                      className="w-24 text-center border rounded-md py-2 px-2"
+                    />
+                  </td>
+                  <td className="p-3 px-2 text-center">
+                    {menu.harga *
+                      (detailTransaksi.find(
+                        (item) => item.id_menu === menu.id
+                      )?.qty || 0)}
+                  </td>
+                  <td className="p-3 px-5 text-center" required>
+                    <button
+                      type="button"
+                      onClick={() => handleAddToCart(menu.id, -1)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mr-2" required
+                    >
+                      Kurang
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleAddToCart(menu.id, 1)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded " required
+                    >
+                      Tambah
+                    </button>
+                  </td>
+                  {/* <td className="p-3 px-5 text-center" required>
                 <button
                   type="button"
                   onClick={() => handleDelete(menu.id)}
@@ -289,27 +297,27 @@ function TambahTransaksi() {
                   Hapus
                 </button>
               </td> */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-    {/* Total Harga */}
-    <div>
-      <label className="block mb-1 text-xl font-bold text-gray-900">Total Harga:</label>
-      <span className="text-xl">{totalHarga}</span>
-    </div>
+        {/* Total Harga */}
+        <div>
+          <label className="block mb-1 text-xl font-bold text-gray-900">Total Harga:</label>
+          <span className="text-xl">{totalHarga}</span>
+        </div>
 
-    {/* Tombol Submit */}
-    <button
-      type="submit"
-      className="btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md no-underline inline-block cursor-pointer"
-    >
-      Tambah Transaksi
-    </button>
-  </form>
-</div>
+        {/* Tombol Submit */}
+        <button
+          type="submit"
+          className="btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md no-underline inline-block cursor-pointer"
+        >
+          Tambah Transaksi
+        </button>
+      </form>
+    </div>
 
   );
 }

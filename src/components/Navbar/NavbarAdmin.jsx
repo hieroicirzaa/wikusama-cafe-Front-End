@@ -53,8 +53,8 @@ export default function NavbarAdmin() {
         <span className="text-3xl cursor-pointer mx-2 md:hidden block">
           <IoMenuSharp name="menuNavbar" onClick={MenuNavbar} />
         </span>
-      </div>
 
+      </div>
       <ul className="transp md:flex md:items-center z-[-1] md:z-auto md:static absolute bg-white w-full left-0 md:w-auto md:py-0 py-4 md:pl-0 pl-7 md:opacity-100 opacity-0 top-[-400px] transition-all ease-in duration-500">
         <li className="mx-4 my-6 md:my-0">
           <a href="DashboardAdmin" className="text-xl hover:text-cyan-500 duration-500 ">
