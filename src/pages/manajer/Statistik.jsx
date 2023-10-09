@@ -66,22 +66,28 @@ function Statistik() {
   };
 
   return (
-    <div className='flex flex-col items-center'>
-      <button
+    <div>
+      <div className='flex flex-col items-center'>
+        <button
         onClick={toggleData}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mb-4 mt-10"
       >
-        {isTerlaris ? "Tampilkan Terendah" : "Tampilkan Terlaris"}
+        {isTerlaris ? "Tampilkan Terlaris" : "Tampilkan Terendah"}
       </button>
+      </div>
+      
+    <div className='flex flex-row items-center justify-center'>
+      
       <div className="w-1/3 p-4">
         <BarChart chartData={menuData} />
       </div>
       <div className="w-1/3 p-4">
         <LineChart chartData={menuData} />
       </div>
-      <div className="w-1/3 p-4">
+      <div className="w-1/4 p-4">
         <PieChart chartData={menuData} />
       </div>
+    </div>
     </div>
   );
 }
